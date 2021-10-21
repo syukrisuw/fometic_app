@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:control_pad/control_pad.dart';
+import 'package:get/get.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const FometicApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class FometicApp extends StatelessWidget {
+  const FometicApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -24,13 +26,13 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Fometic Mobile Home Page'),
+      home: const FometicHomePage(title: 'Fometic Mobile Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class FometicHomePage extends StatefulWidget {
+  const FometicHomePage({Key? key, required this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -44,11 +46,64 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<FometicHomePage> createState() => _FometicHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _FometicHomePageState extends State<FometicHomePage> {
   int _counter = 0;
+  double _degrees = 0.0;
+  double _distance = 0.0;
+  String _pad = "";
+
+  double _validateDegrees (double degrees) {
+    double valid_degrees = 0.0;
+    if ( degrees >= 0.0 && degrees < 20.0 ) {
+      valid_degrees = 0.0;
+    } else if ( degrees >= 20.0 && degrees < 60.0 ){
+      valid_degrees = 45.0;
+    } else if ( degrees >= 60.0 && degrees < 120.0 ) {
+      valid_degrees = 90.0;
+    } else if ( degrees >= 120.0 && degrees < 150.0 ){
+      valid_degrees = 135.0;
+    } else if ( degrees >= 150.0 && degrees < 210.0 ){
+      valid_degrees = 180.0;
+    } else if ( degrees >= 210.0 && degrees < 230.0 ){
+      valid_degrees = 225.0;
+    } else if ( degrees >= 230.0 && degrees < 290.0 ){
+      valid_degrees = 270.0;
+    } else if ( degrees >= 290.0 && degrees < 330.0 ){
+      valid_degrees = 315.0;
+    } else if ( degrees >= 330.0 && degrees < 360.0 ){
+      valid_degrees = 0.0;
+    }
+    return valid_degrees;
+  }
+  void _padACallback(double degrees, double distanceFromCenter) {
+      _degrees = _validateDegrees(degrees);
+
+      _distance = distanceFromCenter;
+      _pad = "A";
+      print("pad:"+_pad +" degrees: "+ _degrees.toString()+" distance:"+_distance.toString());
+  }
+  void _padBCallback(double degrees, double distanceFromCenter) {
+    _degrees = _validateDegrees(degrees);
+    _distance = distanceFromCenter;
+    _pad = "B";
+    print("pad:"+_pad +" degrees: "+ _degrees.toString()+" distance:"+_distance.toString());
+  }
+  void _padCCallback(double degrees, double distanceFromCenter) {
+    _degrees = _validateDegrees(degrees);
+    _distance = distanceFromCenter;
+    _pad = "C";
+    print("pad:"+_pad +" degrees: "+ _degrees.toString()+" distance:"+_distance.toString());
+  }
+
+  void _padDCallback(double degrees, double distanceFromCenter) {
+    _degrees = _validateDegrees(degrees);
+    _distance = distanceFromCenter;
+    _pad = "D";
+    print("pad:"+_pad +" degrees: "+ _degrees.toString()+" distance:"+_distance.toString());
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -101,6 +156,53 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
+            ),
+            const Text(
+              'You have moved PAD :',
+            ),
+            Text(
+              '$_pad',
+              style: Theme.of(context).textTheme.headline4,
+            ),
+            const Text(
+              'Degree / Distance :',
+            ),
+            Text(
+              '$_degrees  $_distance',
+              style: Theme.of(context).textTheme.headline4,
+            ),
+            Row(
+              children: <Widget>[
+                JoystickView(
+                  iconsColor: Colors.deepOrange,
+                  backgroundColor: Colors.amber,
+                  innerCircleColor: Colors.blue,
+                  opacity: 0.8,
+                  size: 170.0,
+                  interval: const Duration(milliseconds : 500),
+                  onDirectionChanged: _padACallback,
+                ),
+                JoystickView(
+                  size: 170.0,
+                  interval: const Duration(milliseconds : 500),
+                  onDirectionChanged: _padBCallback,
+                ),
+
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                JoystickView(
+                  size: 170.0,
+                  interval: const Duration(milliseconds : 500),
+                  onDirectionChanged: _padCCallback,
+                ),
+                JoystickView(
+                  size: 170.0,
+                  interval: const Duration(milliseconds : 500),
+                  onDirectionChanged: _padDCallback,
+                ),
+              ],
             ),
           ],
         ),
