@@ -1,0 +1,18 @@
+import 'package:http/http.dart' as http;
+
+class BackendServices {
+
+  static var client = http.Client();
+
+  static Future<String> fetchData() async {
+    String data = "";
+    var url = Uri.parse('https://httpbin.org/base64/eyAiZGF0YSAiIDogWwp7ImV2ZW50VGl0bGUiIDogIlNlcGFrYm9sYSBBYWFUZWFtIHZzIEJiYlRlYW0iLCAiZXZlbnROYW1lIiA6ICJTdGFydCBOZXcgRXZlbnQiICwgImV2ZW50TWVzc2FnZSIgOiAiRXZlbnQgU3RhcnRlZCIsICJldmVudFN0YXR1cyIgOiAwLCAiZXZlbnRFeGVjdXRpb25UaW1lIiA6ICIyMDIxLTEwLTIzVDA1OjU2OjI0LjIwMjQzMCIgfSwKeyJldmVudFRpdGxlIiA6ICJTZXBha2JvbGEgQWFhVGVhbSB2cyBCYmJUZWFtIiwgImV2ZW50TmFtZSIgOiAiUGxheWVyIEEiLCAiZXZlbnRNZXNzYWdlIiA6ICJTdWNjZXNzIEdvYWwiLCAiZXZlbnRTdGF0dXMiIDogMCwgImV2ZW50RXhlY3V0aW9uVGltZSIgOiAiMjAyMS0xMC0yM1QwNTo1NzowMC42Njc1NDAyMDIxLTEwLTIzVDA1OjU3OjAwLjgyNjY0NDIwMjEtMTAtMjNUMDU6NTc6MDEuMTM5NzE3In0sCnsiZXZlbnRUaXRsZSIgOiAiU2VwYWtib2xhIEFhYVRlYW0gdnMgQmJiVGVhbSIsICJldmVudE5hbWUiIDogIlBsYXllciBBIiwgImV2ZW50TWVzc2FnZSIgOiAiU3VjY2VzcyBHb2FsIiwgImV2ZW50U3RhdHVzIiA6IDAsICJldmVudEV4ZWN1dGlvblRpbWUiIDogIjIwMjEtMTAtMjNUMDU6NTc6MDAuNjY3NTQwMjAyMS0xMC0yM1QwNTo1NzowMC44MjY2NDQyMDIxLTEwLTIzVDA1OjU3OjAxLjEzOTcxNyJ9LAp7ImV2ZW50VGl0bGUiIDogIlNlcGFrYm9sYSBBYWFUZWFtIHZzIEJiYlRlYW0iLCAiZXZlbnROYW1lIiA6ICJQbGF5ZXIgQiIsICJldmVudE1lc3NhZ2UiIDogIlN1Y2Nlc3MgUGFzcyIsICJldmVudFN0YXR1cyIgOiAwLCAiZXZlbnRFeGVjdXRpb25UaW1lIiA6ICIyMDIxLTEwLTIzVDA1OjU3OjAwLjY2NzU0MDIwMjEtMTAtMjNUMDU6NTc6MDAuODI2NjQ0MjAyMS0xMC0yM1QwNTo1NzowMS4xMzk3MTcifQpdCn0%3D');
+    var response = await client.get(url);
+    if (response.statusCode == 200) {
+      data = response.body;
+    } else {
+      data = "Service Unavailable";
+    }
+    return data;
+  }
+}

@@ -14,10 +14,22 @@ class FavouritesPage extends GetView<FavouritesController> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(controller.title),
-              Obx(() => Text("Counter ${controller.counter.value}")),
-              TextButton(
-                child: Text("Increase"),
-                onPressed: () => controller.increaseCounter(),
+              Text("Using Sample https://httpbin.org/base64/xxxx"),
+              ElevatedButton(
+                child: Text("Get Data From Backend"),
+                onPressed: () => controller.getData(),
+              ),
+              Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration (
+                  border: Border.all(color: Colors.blueAccent),
+                ),
+                child:
+                SingleChildScrollView(
+                  child :
+                  Obx(() => Text("Data :  ${controller.dataString.value}")),
+                )
               )
             ],
           ),
