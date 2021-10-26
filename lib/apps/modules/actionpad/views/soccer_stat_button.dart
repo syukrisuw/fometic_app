@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 import 'dart:math' as _math;
 
+typedef SoccerstatCallback = void Function(String actionPushed );
+
 class SoccerstatbuttonView extends StatelessWidget {
   final int delay; //in microseconds
   final double size;
@@ -11,9 +13,11 @@ class SoccerstatbuttonView extends StatelessWidget {
   final Color padColor;
   final double opacity;
   final String assetLink;
+  final SoccerstatCallback onStatButtonPushed;
   String lastAction;
 
   SoccerstatbuttonView({
+    required this.onStatButtonPushed,
     required this.size,
     required this.actionName,
     required this.assetLink,
@@ -24,9 +28,6 @@ class SoccerstatbuttonView extends StatelessWidget {
     this.lastAction = "None"
   });
 
-  void updateLastAction() {
-    this.lastAction = actionName;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +72,7 @@ class SoccerstatbuttonView extends StatelessWidget {
               onTap: () {
                 setState(() => {
                   buttonSize = unpressedSize,
-                  updateLastAction()}
+                  onStatButtonPushed(actionName)}
                 );
                 HapticFeedback.mediumImpact();
                 print(
@@ -93,7 +94,7 @@ class SoccerstatbuttonView extends StatelessWidget {
                 HapticFeedback.mediumImpact();
                 HapticFeedback.mediumImpact();
                 print("Soccerstatbutton ${actionName} onDoubleTap");
-                setState(() => {buttonSize = unpressedSize, updateLastAction()});
+                setState(() => {buttonSize = unpressedSize, onStatButtonPushed(actionName)});
               },
               onDoubleTapCancel: () {
                 HapticFeedback.mediumImpact();
