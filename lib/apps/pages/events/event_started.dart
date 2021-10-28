@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fometic_app/apps/modules/actionpad/views/action_pad_compact.dart';
 import 'package:get/get.dart';
-import 'package:control_pad/control_pad.dart';
 
 import 'package:fometic_app/apps/controllers/events_controller.dart';
 
@@ -10,41 +10,40 @@ class EventStartedView extends GetView<EventsController> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Stack (
-        children: [
+        child: SingleChildScrollView(
+          key: UniqueKey(),
+      physics: NeverScrollableScrollPhysics(),
+      child: (Stack(children: [
         Column(
           children: <Widget>[
             SizedBox(
-              height: 20,
+              height: 10,
             ),
-            Obx(() => Text("Event Name ${controller.event_name.value}")),
+            Obx(() => Text("Event Name ${controller.event_name.value}  Total Player ${controller.total_player.value}")),
             SizedBox(
-              height: 20,
+              height: 10,
             ),
-            Obx(() => Text("Total Player ${controller.total_player.value}")),
+            Text(
+                "Event Start Time ${controller.eventStartTime.toIso8601String()}"),
             SizedBox(
-              height: 20,
-            ),
-            Text("Event Start Time ${controller.eventStartTime.toIso8601String()}"),
-            SizedBox(
-              height: 100,
-              child: Container (
+              height: 80,
+              child: Container(
                 margin: EdgeInsets.all(10),
-                decoration: BoxDecoration (
+                decoration: BoxDecoration(
                   border: Border.all(color: Colors.blueAccent),
                 ),
-                child: Row (
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Container(
-                      width: MediaQuery.of(context).size.width/2 - 30,
-                      decoration: BoxDecoration (
+                      width: MediaQuery.of(context).size.width / 2 - 30,
+                      decoration: BoxDecoration(
                         border: Border.all(color: Colors.red),
                       ),
                     ),
                     Container(
-                      width: MediaQuery.of(context).size.width/2 - 30,
-                      decoration: BoxDecoration (
+                      width: MediaQuery.of(context).size.width / 2 - 30,
+                      decoration: BoxDecoration(
                         border: Border.all(color: Colors.red),
                       ),
                     ),
@@ -55,110 +54,27 @@ class EventStartedView extends GetView<EventsController> {
             Row(
               children: <Widget>[
                 SizedBox(
-                  width: MediaQuery.of(context).size.width/2,
-                  height: 180,
-                  child: Column (
-                    children: <Widget> [
-                      JoystickView(
-                        iconsColor: Colors.deepOrange,
-                        backgroundColor: Colors.amber,
-                        innerCircleColor: Colors.blue,
-                        opacity: 0.8,
-                        size: 100.0,
-                        interval: const Duration(milliseconds : 500),
-                        onDirectionChanged: controller.padACallback,
-                      ),
-                      TextButton(
-                          onPressed: controller.setupPlayer,
-                          child: Text("Setup Player"),
-                      ),
-                    ]
-                  ),
-                ),
+                  width: MediaQuery.of(context).size.width / 2,
+                    height: MediaQuery.of(context).size.height - 300,
+                  child: ActionpadCompactView(key: UniqueKey(), playerList: controller.playerAList, onButtonPushed: controller.onButtonAPushed, orientation: "left", width: MediaQuery.of(context).size.width/2)
 
-                SizedBox(
-                  width: MediaQuery.of(context).size.width/2,
-                  height: 180,
-                  child: Column (
-                      children: <Widget> [
-                        JoystickView(
-                          iconsColor: Colors.deepOrange,
-                          backgroundColor: Colors.amber,
-                          innerCircleColor: Colors.blue,
-                          opacity: 0.8,
-                          size: 100.0,
-                          interval: const Duration(milliseconds : 500),
-                          onDirectionChanged: controller.padBCallback,
-                        ),
-                        TextButton(
-                          onPressed: controller.setupPlayer,
-                          child: Text("Setup Player"),
-                        ),
-                      ]
-                  ),
                 ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 2,
+                  height: MediaQuery.of(context).size.height - 300,
+                    child: ActionpadCompactView(key: UniqueKey(), playerList: controller.playerBList, onButtonPushed: controller.onButtonBPushed, orientation: "right", width: MediaQuery.of(context).size.width/2)
 
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                SizedBox(
-                  width: MediaQuery.of(context).size.width/2,
-                  height: 180,
-                  child: Column (
-                      children: <Widget> [
-                        JoystickView(
-                          iconsColor: Colors.deepOrange,
-                          backgroundColor: Colors.amber,
-                          innerCircleColor: Colors.blue,
-                          opacity: 0.8,
-                          size: 100.0,
-                          interval: const Duration(milliseconds : 500),
-                          onDirectionChanged: controller.padCCallback,
-                        ),
-                        TextButton(
-                          onPressed: controller.setupPlayer,
-                          child: Text("Setup Player"),
-                        ),
-                      ]
-                  ),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width/2,
-                  height: 180,
-                  child: Column (
-                      children: <Widget> [
-                        JoystickView(
-                          iconsColor: Colors.deepOrange,
-                          backgroundColor: Colors.amber,
-                          innerCircleColor: Colors.blue,
-                          opacity: 0.8,
-                          size: 100.0,
-                          interval: const Duration(milliseconds : 500),
-                          onDirectionChanged: controller.padDCallback,
-                        ),
-                        TextButton(
-                          onPressed: controller.setupPlayer,
-                          child: Text("Setup Player"),
-                        ),
-                      ]
-                  ),
-                ),
+    ),
               ],
             ),
           ],
         ),
-          Positioned(
-              bottom: 10,
-              right: 10,
-              child: TextButton(
-                  onPressed: controller.stopEvent,
-                  child: Text("Stop Event")
-              )
-          ),
-      ]
-    )
-    );
+        Positioned(
+            bottom: 10,
+            right: 10,
+            child: TextButton(
+                onPressed: controller.stopEvent, child: Text("Stop Event"))),
+      ])),
+    ));
   }
-
 }

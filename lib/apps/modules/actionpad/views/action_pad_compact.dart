@@ -49,7 +49,22 @@ class ActionpadCompactView extends StatefulWidget {
 class _ActionpadCompactView extends State<ActionpadCompactView> {
   List<MaterialColor> buttonColorList = [];
   String selectedPlayerName = "";
+  List<String> playerSelectionList = [];
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    playerSelectionList = getValidPlayerList();
+    selectedPlayerName = playerSelectionList[0];
+    for (var i = 0; i < playerSelectionList.length; i++) {
+      if (playerSelectionList[i] == selectedPlayerName) {
+        buttonColorList.add(this.widget.selectedColor);
+      } else {
+        buttonColorList.add(this.widget.unselectedColor);
+      }
+    }
+    super.initState();
+  }
   void resetButtonColor() {
     for (var i = 0; i < buttonColorList.length; i++) {
       buttonColorList[i] = this.widget.unselectedColor;
@@ -153,18 +168,12 @@ class _ActionpadCompactView extends State<ActionpadCompactView> {
     double playerSelectionButtonWidth = getValidPlayerSelectionButtonWidth();
     double playerSelectionButtonHeight = getValidPlayerSelectionButtonHeight();
 
-    List<String> playerSelectionList = getValidPlayerList();
-    for (var i = 0; i < playerSelectionList.length; i++) {
-      if (playerSelectionList[i] == selectedPlayerName) {
-        buttonColorList.add(this.widget.selectedColor);
-      } else {
-        buttonColorList.add(this.widget.unselectedColor);
-      }
-    }
 
     if ((selectedPlayerName == "") || (selectedPlayerName == "NONE")) {
-      selectedPlayerName = playerSelectionList[0];
-      buttonColorList[0] = this.widget.selectedColor;
+      if (playerSelectionList.isNotEmpty) {
+        selectedPlayerName = playerSelectionList[0];
+        buttonColorList[0] = this.widget.selectedColor;
+      }
     }
 
     int totalSelectionRow = getValidPlayerSelectionRow();

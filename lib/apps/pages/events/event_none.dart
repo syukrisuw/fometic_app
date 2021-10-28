@@ -13,12 +13,7 @@ class EventNoneView extends GetView<EventsController> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(controller.noEventTitle),
-            Obx(() => Text("Counter ${controller.counter.value}")),
-            TextButton(
-              child: Text("Increase"),
-              onPressed: () => controller.increaseCounter(),
-            ),
-            FloatingActionButton(
+             FloatingActionButton(
 
                 child: Icon(Icons.add, size: 30),
                 onPressed: controller.newEvent,

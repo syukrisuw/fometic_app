@@ -1,28 +1,65 @@
 import 'dart:io';
-
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:fometic_app/apps/modules/actionpad/views/action_pad_compact.dart';
+import 'package:fometic_app/apps/modules/dialogs/add_player_dialog.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:fometic_app/apps/models/event_model.dart';
+import 'package:fometic_app/apps/models/player_model.dart';
+import 'package:geolocator/geolocator.dart';
 
 class EventsController extends GetxController {
   final String title = 'Event Title';
   final String noEventTitle = 'No Event Title';
+  var locationLat = "".obs;
+  var locationLong = "".obs;
   var eventViewIndex = 0; //initiated to event_none view
   var counter = 0.obs;
   var event_created = 0.obs;
   var event_name = "New Event".obs;
   var total_player = "0".obs;
-  DateTime eventStartTime = DateTime(2021,1,1);
+  var totalPlayer = 0.obs;
 
+  GlobalKey actionpadCompactLeft = new GlobalKey();
+  GlobalKey actionpadCompactRight = new GlobalKey();
+
+  DateTime eventStartTime = DateTime(2021, 1, 1);
+
+  List<PlayerModel> playerModelList = <PlayerModel>[].obs;
+
+  List<String> playerList = <String>[].obs;
   List<EventModel> eventList = <EventModel>[];
+
+  TextEditingController eventNameTextController = TextEditingController();
+  TextEditingController eventTotalPlayerTextController =
+      TextEditingController();
+  TextEditingController playerNumberTextController = TextEditingController();
+  TextEditingController playerNameTextController = TextEditingController();
+  TextEditingController playerPositionTextController = TextEditingController();
+  TextEditingController playerStatusTextController = TextEditingController();
+
+  List<String> playerAList = <String>[];
+  List<String> playerBList = <String>[];
+
+  void onLocationButtonPressed() {
+    Future<Position> currentPos = determinePosition();
+    currentPos.then((Position pos) {
+      locationLat.value = pos.latitude.toString();
+      locationLong.value = pos.longitude.toString();
+    }, onError: (e) {
+      locationLat.value = "Unknown";
+      locationLong.value = "Unknown";
+    });
+  }
 
   void increaseCounter() {
     counter.value += 1;
   }
 
-  Future<String> getLocalPath()  async {
+  Future<String> getLocalPath() async {
     //var dir = await getApplicationDocumentsDirectory();
-    Directory?  directory;
+    Directory? directory;
     directory = await getExternalStorageDirectory();
     String newPath = "";
     print(directory);
@@ -51,7 +88,8 @@ class EventsController extends GetxController {
     return File('$path/Event_$eventTitle.csv');
   }
 
-  Future<File> writeToFile(String eventTitle, List<EventModel> eventModelList) async {
+  Future<File> writeToFile(
+      String eventTitle, List<EventModel> eventModelList) async {
     File file = await getLocalFile(eventTitle);
     String data = "";
     if (eventModelList.isNotEmpty) {
@@ -67,14 +105,14 @@ class EventsController extends GetxController {
   }
 
   Future<List<EventModel>> readFromFile(String eventTitle) async {
-    List<EventModel> eventModelList =  <EventModel>[];
+    List<EventModel> eventModelList = <EventModel>[];
     try {
       final file = await getLocalFile(eventTitle);
       String data = await file.readAsString();
       List<String> dataStringList = data.split("\n");
-      dataStringList[0] = "";  //Set Header as empty String
-      for( String dataString in dataStringList) {
-        if (dataString!="") {
+      dataStringList[0] = ""; //Set Header as empty String
+      for (String dataString in dataStringList) {
+        if (dataString != "") {
           List<String> dataValueList = dataString.split(",");
           EventModel eventModel = EventModel();
           eventModel.eventTitle = dataValueList[0];
@@ -91,7 +129,7 @@ class EventsController extends GetxController {
     }
   }
 
-   void stopEvent() {
+  void stopEvent() {
     if (eventList.isNotEmpty) {
       print("HEADER : " + EventModel.getCSVHeaderString());
       EventModel eventModel = EventModel();
@@ -108,19 +146,25 @@ class EventsController extends GetxController {
       print("Event Length : " + eventList.length.toString());
       writeToFile(event_name.value, eventList);
     }
+    eventNameTextController.text = "";
+    eventTotalPlayerTextController.text = "";
+    playerAList.clear();
+    playerBList.clear();
+    totalPlayer.value = 0;
+    playerModelList.clear();
     total_player.value = "0";
     event_created.value = 0;
     eventViewIndex = 0;
     update();
   }
 
-  void clearEventList(){
+  void clearEventList() {
     event_name.value = "";
     eventList.clear();
   }
 
   void cancelEvent() {
-    event_name.value = "";
+    clearEventList();
     total_player.value = "0";
     event_created.value = 0;
     eventViewIndex = 0;
@@ -128,12 +172,17 @@ class EventsController extends GetxController {
   }
 
   void newEvent() {
+    clearEventList();
     event_created.value = 1;
     eventViewIndex = 1;
+    playerModelList.clear();
+    playerAList.clear();
+    playerBList.clear();
+    totalPlayer.value = 0;
     update();
   }
 
-  void startNewEvent( String eventName, String totalPlayer ) {
+  void startNewEvent(String eventName, String totalPlayer) {
     clearEventList();
     event_name.value = eventName;
     total_player.value = totalPlayer;
@@ -150,142 +199,133 @@ class EventsController extends GetxController {
     update();
   }
 
-  void updateEventName( String eventName ) {
+  void updateEventName(String eventName) {
     event_name.value = eventName;
     event_created.value = 1;
     eventViewIndex = 2;
     update();
   }
 
-  void setupPlayer() {
-  }
+  void setupPlayer() {}
 
+  Future<Position> determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
-  double degrees = 0.0;
-  double distance = 0.0;
-  String pad = "";
-
-  double validateDegrees (double degrees) {
-    //Clock like degrees, 0 on top
-    double valid_degrees = 0.0;
-    if ( degrees >= 0.0 && degrees < 20.0 ) {
-      valid_degrees = 0.0;
-    } else if ( degrees >= 20.0 && degrees < 60.0 ){
-      valid_degrees = 45.0;
-    } else if ( degrees >= 60.0 && degrees < 120.0 ) {
-      valid_degrees = 90.0;
-    } else if ( degrees >= 120.0 && degrees < 150.0 ){
-      valid_degrees = 135.0;
-    } else if ( degrees >= 150.0 && degrees < 210.0 ){
-      valid_degrees = 180.0;
-    } else if ( degrees >= 210.0 && degrees < 230.0 ){
-      valid_degrees = 225.0;
-    } else if ( degrees >= 230.0 && degrees < 290.0 ){
-      valid_degrees = 270.0;
-    } else if ( degrees >= 290.0 && degrees < 330.0 ){
-      valid_degrees = 315.0;
-    } else if ( degrees >= 330.0 && degrees < 360.0 ){
-      valid_degrees = 0.0;
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
     }
-    return valid_degrees;
-  }
 
-  String padActionMapper(double degrees) {
-    var actionString = "";
-    switch(degrees.toInt()) {
-      case 0: {
-        actionString = "Success Goal";
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
       }
-      break;
-      case 180: {
-        actionString = "Prevent Goal";
-      }
-      break;
-
-      case 45: {
-        actionString = "Shoot On Target";
-      }
-      break;
-      case 315: {
-        actionString = "Shoot Off Target";
-      }
-      break;
-
-      case 90: {
-        actionString = "Success Pass";
-      }
-      break;
-      case 270: {
-        actionString = "Failed Pass";
-      }
-      break;
-
-      case 135: {
-        actionString = "Success Tackle";
-      }
-      break;
-      case 225: {
-        actionString = "Failed Tackle";
-      }
-      break;
-
-      default: {
-        actionString = "Unknown";
-      }
-      break;
     }
-    return actionString;
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
   }
 
-
-  void padACallback(double degrees, double distanceFromCenter) {
-    degrees = validateDegrees(degrees);
-
-    distance = distanceFromCenter;
-    pad = "A";
-    EventModel eventModel = EventModel();
-    eventModel.eventTitle = event_name.value;
-    eventModel.eventName = "Player A";
-    eventModel.eventMessage = padActionMapper(degrees);
-    eventModel.eventExecutionTime = DateTime.now();
-    eventList.add(eventModel);
-    print("pad:"+pad +" degrees: "+ degrees.toString()+" distance:"+distance.toString());
-  }
-  void padBCallback(double degrees, double distanceFromCenter) {
-    degrees = validateDegrees(degrees);
-    distance = distanceFromCenter;
-    pad = "B";
-    EventModel eventModel = EventModel();
-    eventModel.eventTitle = event_name.value;
-    eventModel.eventName = "Player B";
-    eventModel.eventMessage = padActionMapper(degrees);
-    eventModel.eventExecutionTime = DateTime.now();
-    eventList.add(eventModel);
-    print("pad:"+pad +" degrees: "+ degrees.toString()+" distance:"+distance.toString());
-  }
-  void padCCallback(double degrees, double distanceFromCenter) {
-    degrees = validateDegrees(degrees);
-    distance = distanceFromCenter;
-    pad = "C";
-    EventModel eventModel = EventModel();
-    eventModel.eventTitle = event_name.value;
-    eventModel.eventName = "Player C";
-    eventModel.eventMessage = padActionMapper(degrees);
-    eventModel.eventExecutionTime = DateTime.now();
-    eventList.add(eventModel);
-    print("pad:"+pad +" degrees: "+ degrees.toString()+" distance:"+distance.toString());
+  void onAddPlayerCancel() {
+    Get.back();
   }
 
-  void padDCallback(double degrees, double distanceFromCenter) {
-    degrees = validateDegrees(degrees);
-    distance = distanceFromCenter;
-    pad = "D";
+  void onAddPlayerEventConfirm() {
+    if (totalPlayer.value == 0) {
+      playerList.clear();
+    }
+    playerList.add("New Player");
+    totalPlayer.value += 1;
+    Get.back();
+  }
+
+  void onAddPlayerConfirm(String number, String playerName, String playerPosition, bool isSubstitution) {
+    if (totalPlayer.value == 0) {
+      playerModelList.clear();
+    }
+    PlayerModel addPlayerModel = PlayerModel(playerNumber: int.parse(number), playerName: playerName, playerPosition: playerPosition);
+    if(isSubstitution){
+      addPlayerModel.playerStatus = "Substitution";
+    } else {
+      addPlayerModel.playerStatus = "Playing";
+    }
+    playerModelList.add(addPlayerModel);
+    totalPlayer.value += 1;
+    Get.back();
+  }
+
+  void onAddPlayerButtonPressed() {
+    //Get.dialog(AddPlayerDialog( onCancelCallback: onAddPlayerCancel, onConfirmCallback: onAddPlayerConfirm));
+    Get.defaultDialog(
+      title: "Add Player",
+      content: SizedBox(
+        width: 400,
+        height: 400,
+        child:Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Row(children: <Widget>[
+            TextField(
+              controller: this.playerNameTextController,
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Name of the Player",
+                  labelText: "Player Name",
+                  labelStyle: TextStyle(fontSize: 24, color: Colors.black)),
+            ),
+          ]),
+        ],
+      ),),
+      onConfirm: onAddPlayerEventConfirm,
+      onCancel: onAddPlayerCancel,
+    );
+  }
+
+  void onRemovePlayer(int index) {
+    if (totalPlayer.value > 0) {
+      playerModelList.removeAt(index);
+      totalPlayer.value -= 1;
+    } else {
+      playerModelList.clear();
+    }
+  }
+
+  void onButtonAPushed(String playerName, String actionPushed) {
     EventModel eventModel = EventModel();
     eventModel.eventTitle = event_name.value;
-    eventModel.eventName = "Player D";
-    eventModel.eventMessage = padActionMapper(degrees);
+    eventModel.eventName = playerName;
+    eventModel.eventMessage = actionPushed;
+    eventModel.eventStatus = 1;
     eventModel.eventExecutionTime = DateTime.now();
     eventList.add(eventModel);
-    print("pad:"+pad +" degrees: "+ degrees.toString()+" distance:"+distance.toString());
+  }
+
+  void onButtonBPushed(String playerName, String actionPushed) {
+    EventModel eventModel = EventModel();
+    eventModel.eventTitle = event_name.value;
+    eventModel.eventName = playerName;
+    eventModel.eventMessage = actionPushed;
+    eventModel.eventStatus = 1;
+    eventModel.eventExecutionTime = DateTime.now();
+    eventList.add(eventModel);
   }
 }

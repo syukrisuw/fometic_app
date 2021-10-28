@@ -1,11 +1,13 @@
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class MainController extends GetxController {
   final String title = 'Main Title';
   var tabIndex = 2;
   var allowWriteFile = false;
 
+  PersistentTabController tabController =  PersistentTabController(initialIndex: 0);
   @override
   void onInit() {
     // TODO: implement onInit

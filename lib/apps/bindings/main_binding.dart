@@ -11,11 +11,12 @@ class MainBinding extends Bindings {
 
   @override
   void dependencies() {
-    Get.lazyPut<MainController>(() => MainController());
-    Get.lazyPut<HomeController>(() => HomeController());
-    Get.lazyPut<FavouritesController>(() => FavouritesController());
-    Get.lazyPut<SettingsController>(() => SettingsController());
-    Get.lazyPut<EventsController>(() => EventsController());
-    Get.lazyPut<HistoriesController>(() => HistoriesController());
+    Get.put(MainController());
+    Get.put(HomeController());
+    Get.put(FavouritesController());
+    Get.put(SettingsController());
+    Get.put(EventsController());
+    Get.put(HistoriesController());
+//    Get.lazyPut<HistoriesController>(() => HistoriesController());
   }
 }

@@ -1,8 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
   final String title = 'Home Title';
   var counter = 0.obs;
+
+  GlobalKey padAKey = GlobalKey();
+  GlobalKey padBKey = GlobalKey();
 
   var statTimeA = "".obs;
   var statTimeB = "".obs;

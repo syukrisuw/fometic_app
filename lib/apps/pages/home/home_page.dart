@@ -13,6 +13,8 @@ class HomePage extends GetView<HomeController> {
   String _lastActionA ="";
   String _lastActionB = "";
 
+
+
   @override
   Widget build(BuildContext context) {
     List<String> playerAList = ['Abud', 'Agus', 'Alex', 'Andre', 'Azul'];
@@ -44,7 +46,7 @@ class HomePage extends GetView<HomeController> {
                             border: Border.all(color: Colors.green),
                           ),
                           height: 500,
-                          child: ActionpadCompactView(playerList: playerAList, onButtonPushed: controller.onButtonAPushed, orientation: "left", width: MediaQuery.of(context).size.width/2)
+                          child: ActionpadCompactView( key: controller.padAKey, playerList: playerAList, onButtonPushed: controller.onButtonAPushed, orientation: "left", width: MediaQuery.of(context).size.width/2)
                       ),
                     ),
                     Positioned(
@@ -56,7 +58,7 @@ class HomePage extends GetView<HomeController> {
                             border: Border.all(color: Colors.blue),
                           ),
                           height: 500,
-                          child: ActionpadCompactView(playerList: playerBList, onButtonPushed: controller.onButtonBPushed, orientation: "right", width: MediaQuery.of(context).size.width/2)
+                          child: ActionpadCompactView( key: controller.padBKey, playerList: playerBList, onButtonPushed: controller.onButtonBPushed, orientation: "right", width: MediaQuery.of(context).size.width/2)
                       ),
                     ),
                   ],
