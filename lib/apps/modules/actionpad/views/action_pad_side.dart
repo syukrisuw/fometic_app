@@ -96,19 +96,19 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
             Row(children: <Widget>[
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Heading",
+                singleTapAction: "Heading",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/heading.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Shoot",
+                singleTapAction: "Shoot",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/shoot.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Long Shoot",
+                singleTapAction: "Long Shoot",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/shoot_long.png",
               ),
@@ -118,7 +118,7 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "New Player",
+                singleTapAction: "New Player",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/new_player.png",
               ),
@@ -126,19 +126,19 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
             Row(children: <Widget>[
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Dribling",
+                singleTapAction: "Dribling",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/drible.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Short Pass Completed",
+                singleTapAction: "Short Pass Completed",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/pass_short.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Long Pass Completed",
+                singleTapAction: "Long Pass Completed",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/pass_long.png",
               ),
@@ -148,7 +148,7 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Player Substituted",
+                singleTapAction: "Player Substituted",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/substituted.png",
               ),
@@ -156,19 +156,19 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
             Row(children: <Widget>[
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Handling",
+                singleTapAction: "Handling",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/handling.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Intercept",
+                singleTapAction: "Intercept",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/intercept.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Tackle Good",
+                singleTapAction: "Tackle Good",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/tackle_ok.png",
               ),
@@ -178,7 +178,7 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Foul Committed",
+                singleTapAction: "Foul Committed",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/foul.png",
               ),
@@ -189,19 +189,19 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
             Row(children: <Widget>[
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Own Goal Committed",
+                singleTapAction: "Own Goal Committed",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/owngoal.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Tackle Foul",
+                singleTapAction: "Tackle Foul",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/tackle_nok.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Hands Ball",
+                singleTapAction: "Hands Ball",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/handsball.png",
               ),
@@ -211,7 +211,7 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Off Side",
+                singleTapAction: "Off Side",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/offside.png",
               ),
@@ -222,19 +222,19 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
             Row(children: <Widget>[
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Shoot Off Target",
+                singleTapAction: "Shoot Off Target",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/offtarget.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Shoot On Target",
+                singleTapAction: "Shoot On Target",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/ontarget.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Goal",
+                singleTapAction: "Goal",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/goal.png",
               ),
@@ -244,7 +244,7 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Ball Out Of Play",
+                singleTapAction: "Ball Out Of Play",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/ballout.png",
               ),
@@ -252,19 +252,19 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
             Row(children: <Widget>[
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Goal Saved",
+                singleTapAction: "Goal Saved",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/goal_saving.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Assist",
+                singleTapAction: "Assist",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/assist.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Penalty Shoot",
+                singleTapAction: "Penalty Shoot",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/penalty_shoot.png",
               ),
@@ -274,7 +274,7 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Yellow Card",
+                singleTapAction: "Yellow Card",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/yellowcard.png",
               ),
@@ -282,19 +282,19 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
             Row(children: <Widget>[
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Off The Ball Movement",
+                singleTapAction: "Off The Ball Movement",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/offball.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Throw In",
+                singleTapAction: "Throw In",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/throwin.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Corner Kick",
+                singleTapAction: "Corner Kick",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/cornerkick.png",
               ),
@@ -304,7 +304,7 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Red Card",
+                singleTapAction: "Red Card",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/redcard.png",
               ),
@@ -330,7 +330,7 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
             Row(children: <Widget>[
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "New Player",
+                singleTapAction: "New Player",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/new_player.png",
               ),
@@ -340,19 +340,19 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Heading",
+                singleTapAction: "Heading",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/heading.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Shoot",
+                singleTapAction: "Shoot",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/shoot.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Long Shoot",
+                singleTapAction: "Long Shoot",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/shoot_long.png",
               ),
@@ -360,7 +360,7 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
             Row(children: <Widget>[
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Player Substituted",
+                singleTapAction: "Player Substituted",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/substituted.png",
               ),
@@ -370,19 +370,19 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Dribling",
+                singleTapAction: "Dribling",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/drible.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Short Pass Completed",
+                singleTapAction: "Short Pass Completed",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/pass_short.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Long Shoot Completed",
+                singleTapAction: "Long Shoot Completed",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/pass_long.png",
               ),
@@ -390,7 +390,7 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
             Row(children: <Widget>[
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Foul Commited",
+                singleTapAction: "Foul Commited",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/foul.png",
               ),
@@ -400,19 +400,19 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Handling",
+                singleTapAction: "Handling",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/handling.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Intercept",
+                singleTapAction: "Intercept",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/intercept.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Good Tackle",
+                singleTapAction: "Good Tackle",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/tackle_ok.png",
               ),
@@ -423,7 +423,7 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
             Row(children: <Widget>[
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Offside",
+                singleTapAction: "Offside",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/offside.png",
               ),
@@ -433,19 +433,19 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Own Goal Committed",
+                singleTapAction: "Own Goal Committed",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/owngoal.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Tackle Foul",
+                singleTapAction: "Tackle Foul",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/tackle_nok.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Hands Ball",
+                singleTapAction: "Hands Ball",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/handsball.png",
               ),
@@ -456,7 +456,7 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
             Row(children: <Widget>[
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Ballout",
+                singleTapAction: "Ballout",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/ballout.png",
               ),
@@ -466,19 +466,19 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Shoot Off Target",
+                singleTapAction: "Shoot Off Target",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/offtarget.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Shoot On Target",
+                singleTapAction: "Shoot On Target",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/ontarget.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Goal",
+                singleTapAction: "Goal",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/goal.png",
               ),
@@ -486,7 +486,7 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
             Row(children: <Widget>[
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Yellow Card",
+                singleTapAction: "Yellow Card",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/yellowcard.png",
               ),
@@ -496,19 +496,19 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Goal Saved",
+                singleTapAction: "Goal Saved",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/goal_saving.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Assist",
+                singleTapAction: "Assist",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/assist.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Penalty Shoot",
+                singleTapAction: "Penalty Shoot",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/penalty_shoot.png",
               ),
@@ -516,7 +516,7 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
             Row(children: <Widget>[
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Red Card",
+                singleTapAction: "Red Card",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/redcard.png",
               ),
@@ -526,19 +526,19 @@ class _ActionpadsideViewState extends State<ActionpadsideView> {
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Off The Ball Movement",
+                singleTapAction: "Off The Ball Movement",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/offball.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Throw In",
+                singleTapAction: "Throw In",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/throwin.png",
               ),
               SoccerstatbuttonView(
                 onStatButtonPushed: onStatButtonPushed,
-                actionName: "Corner Kick",
+                singleTapAction: "Corner Kick",
                 size: buttonSideSize,
                 assetLink: "assets/newimages/large/cornerkick.png",
               ),

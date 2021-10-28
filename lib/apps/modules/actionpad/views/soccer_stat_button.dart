@@ -8,7 +8,9 @@ typedef SoccerstatCallback = void Function(String actionPushed );
 class SoccerstatbuttonView extends StatelessWidget {
   final int delay; //in microseconds
   final double size;
-  final String actionName;
+  final String singleTapAction;
+  String doubleTapAction;
+  String longTapAction;
   final Color backgroundColor;
   final Color padColor;
   final double opacity;
@@ -19,13 +21,15 @@ class SoccerstatbuttonView extends StatelessWidget {
   SoccerstatbuttonView({
     required this.onStatButtonPushed,
     required this.size,
-    required this.actionName,
+    required this.singleTapAction,
     required this.assetLink,
     this.backgroundColor = Colors.blueGrey,
     this.padColor = Colors.blueGrey,
     this.opacity = 1.0,
     this.delay = 100,
-    this.lastAction = "None"
+    this.lastAction = "None",
+    this.doubleTapAction = "",
+    this.longTapAction = ""
   });
 
 
@@ -38,6 +42,12 @@ class SoccerstatbuttonView extends StatelessWidget {
     double pressedSize = 6.0;
     if ((size - 10) > 6) {
       pressedSize = (size - 10);
+    }
+    if (doubleTapAction == "") {
+      doubleTapAction = singleTapAction;
+    }
+    if (longTapAction == "") {
+      longTapAction = singleTapAction;
     }
 
     double buttonSize = unpressedSize;
@@ -59,72 +69,73 @@ class SoccerstatbuttonView extends StatelessWidget {
                 setState(() => buttonSize = pressedSize);
                 HapticFeedback.mediumImpact();
                 print(
-                    "Soccerstatbutton ${actionName} onTapDown, image reduced from ${unpressedSize} to ${buttonSize}");
+                    "Soccerstatbutton ${singleTapAction} onTapDown, image reduced from ${unpressedSize} to ${buttonSize}");
               },
               onTapUp: (details) {
                 setState(() => buttonSize = pressedSize);
 
                 print(
-                    "Soccerstatbutton ${actionName} onTapUp localposition : dx: ${details.localPosition.dx}  dy: ${details.localPosition.dy}");
+                    "Soccerstatbutton ${singleTapAction} onTapUp localposition : dx: ${details.localPosition.dx}  dy: ${details.localPosition.dy}");
                 print(
                     "                       onTapUp globalposition : dx: ${details.globalPosition.dx}  dy: ${details.globalPosition.dy}");
               },
               onTap: () {
                 setState(() => {
                   buttonSize = unpressedSize,
-                  onStatButtonPushed(actionName)}
+                  onStatButtonPushed(singleTapAction)}
                 );
                 HapticFeedback.mediumImpact();
                 print(
-                    "Soccerstatbutton ${actionName} onTap, image returned to ${buttonSize}");
+                    "Soccerstatbutton ${singleTapAction} onTap, image returned to ${buttonSize}");
               },
               onTapCancel: () {
                 setState(() => buttonSize = unpressedSize);
                 HapticFeedback.mediumImpact();
                 print(
-                    "Soccerstatbutton ${actionName} onTapCancel, image returned to ${buttonSize}");
+                    "Soccerstatbutton ${singleTapAction} onTapCancel, image returned to ${buttonSize}");
               },
               onDoubleTapDown: (details) {
                 setState(() => buttonSize = pressedSize);
                 HapticFeedback.mediumImpact();
-                print("Soccerstatbutton ${actionName} onDoubleTapDown");
+                print("Soccerstatbutton ${doubleTapAction} onDoubleTapDown");
 
               },
               onDoubleTap: () {
                 HapticFeedback.mediumImpact();
                 HapticFeedback.mediumImpact();
-                print("Soccerstatbutton ${actionName} onDoubleTap");
-                setState(() => {buttonSize = unpressedSize, onStatButtonPushed(actionName)});
+                print("Soccerstatbutton ${doubleTapAction} onDoubleTap");
+                setState(() => {buttonSize = unpressedSize, onStatButtonPushed(doubleTapAction)});
               },
               onDoubleTapCancel: () {
                 HapticFeedback.mediumImpact();
-                print("Soccerstatbutton ${actionName} onDoubleTapCancel");
+                print("Soccerstatbutton ${singleTapAction} onDoubleTapCancel");
                 setState(() => buttonSize = unpressedSize);
               },
               onLongPressStart: (details) {
                 setState(() => buttonSize = pressedSize);
                 HapticFeedback.mediumImpact();
-                print("Soccerstatbutton ${actionName} onLongPressStart");
+                print("Soccerstatbutton ${longTapAction} onLongPressStart");
               },
               onLongPressDown: (details) {
                 setState(() => buttonSize = pressedSize);
                 HapticFeedback.mediumImpact();
-                print("Soccerstatbutton ${actionName} onLongPressDown");
+                print("Soccerstatbutton ${longTapAction} onLongPressDown");
               },
               onLongPressEnd: (details) {
                 setState(() => buttonSize = pressedSize);
                 HapticFeedback.mediumImpact();
-                print("Soccerstatbutton ${actionName} onLongPressEnd");
+                print("Soccerstatbutton ${longTapAction} onLongPressEnd");
               },
               onLongPressUp: () {
                 setState(() => buttonSize = unpressedSize);
+                onStatButtonPushed(longTapAction);
                 HapticFeedback.mediumImpact();
-                print("Soccerstatbutton ${actionName} onLongPressUp");
+                print("Soccerstatbutton ${longTapAction} onLongPressUp");
               },
               onLongPressCancel: () {
                 setState(() => buttonSize = unpressedSize);
                 HapticFeedback.mediumImpact();
-                print("Soccerstatbutton ${actionName} onLongPressCancel");
+                print("Soccerstatbutton ${singleTapAction} onLongPressCancel");
               },
             );
           },
