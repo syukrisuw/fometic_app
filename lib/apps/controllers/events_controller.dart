@@ -1,25 +1,39 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fometic_app/apps/modules/actionpad/views/action_pad_compact.dart';
 import 'package:fometic_app/apps/modules/dialogs/add_player_dialog.dart';
 import 'package:get/get.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:fometic_app/apps/models/event_model.dart';
 import 'package:fometic_app/apps/models/player_model.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:camera/camera.dart';
+
 
 class EventsController extends GetxController {
+
   final String title = 'Event Title';
   final String noEventTitle = 'No Event Title';
-  var locationLat = "".obs;
-  var locationLong = "".obs;
+  var locationLat = "-6.17553".obs;
+  var locationLong = "106.82747".obs;
   var eventViewIndex = 0; //initiated to event_none view
   var counter = 0.obs;
   var event_created = 0.obs;
   var event_name = "New Event".obs;
   var total_player = "0".obs;
   var totalPlayer = 0.obs;
+  var mapWidth = Get.mediaQuery.size.width.toInt().obs;
+
+  List<CameraDescription> cameras = [];
+  CameraController? camController;
+  bool isCameraInitialized = false;
+  var imageModeSelected = "image".obs;
+  var recordingMode = "stop".obs;
+  bool isRecordingInProgress = false;
+  bool isVideoCameraSelected = false;
 
   GlobalKey actionpadCompactLeft = new GlobalKey();
   GlobalKey actionpadCompactRight = new GlobalKey();
@@ -42,15 +56,118 @@ class EventsController extends GetxController {
   List<String> playerAList = <String>[];
   List<String> playerBList = <String>[];
 
+  @override
+  void onInit() {
+    locationLat.value = "-6.17553";
+    locationLong.value = "106.82747";
+    mapWidth.value = Get.mediaQuery.size.width.toInt();
+    //SystemChrome.setEnabledSystemUIOverlays([]);
+    initCamera().then((value) => onNewCameraSelected(cameras[0], true));
+
+    super.onInit();
+  }
+
+  @override
+  void onClose() {
+    camController?.dispose();
+    super.onClose();
+  }
+
+  void selectImageVideoRecording(int mode){
+    if (mode==1) {
+      imageModeSelected.value="video";
+      recordingMode.value="stop";
+      isVideoCameraSelected = true;
+      print("Selecting Video Record Mode");
+    } else {
+      imageModeSelected.value="image";
+      recordingMode.value="stop";
+      isVideoCameraSelected = false;
+      print("Selecting Image Capture Mode");
+    }
+    update();
+  }
+
+  Future<void> startVideoRecording() async {
+    final CameraController? cameraController = camController;
+    if (camController!.value.isRecordingVideo) {
+      // A recording has already started, do nothing.
+      return;
+    }
+    try {
+      await cameraController!.startVideoRecording();
+        isRecordingInProgress = true;
+        recordingMode.value="record";
+        print(isRecordingInProgress);
+    } on CameraException catch (e) {
+      print('Error starting to record video: $e');
+    } finally {
+      update();
+    }
+
+  }
+
+  Future<XFile?> stopVideoRecording() async {
+    print("Stop Video recording");
+    if (!camController!.value.isRecordingVideo) {
+      // Recording is already is stopped state
+      return null;
+    }
+    try {
+      XFile file = await camController!.stopVideoRecording();
+        recordingMode.value="stop";
+        isRecordingInProgress = false;
+        print(isRecordingInProgress);
+        update();
+      return file;
+    } on CameraException catch (e) {
+      print('Error stopping video recording: $e');
+      return null;
+    } finally {
+      update();
+    }
+  }
+
+  Future<void> pauseVideoRecording() async {
+    if (!camController!.value.isRecordingVideo) {
+      // Video recording is not in progress
+      return;
+    }
+    try {
+      await camController!.pauseVideoRecording();
+    } on CameraException catch (e) {
+      print('Error pausing video recording: $e');
+    } finally {
+      update();
+    }
+  }
+
+  Future<void> resumeVideoRecording() async {
+    if (!camController!.value.isRecordingVideo) {
+      // No video recording was in progress
+      update();
+      return;
+    }
+    try {
+      await camController!.resumeVideoRecording();
+    } on CameraException catch (e) {
+      print('Error resuming video recording: $e');
+    } finally {
+      update();
+    }
+  }
+
   void onLocationButtonPressed() {
+    mapWidth.value= Get.mediaQuery.size.width.toInt()-5;
     Future<Position> currentPos = determinePosition();
     currentPos.then((Position pos) {
       locationLat.value = pos.latitude.toString();
-      locationLong.value = pos.longitude.toString();
+      locationLong.value= pos.longitude.toString();
     }, onError: (e) {
-      locationLat.value = "Unknown";
-      locationLong.value = "Unknown";
+      locationLat.value = "-6.17553";
+      locationLong.value = "106.82747";
     });
+    update();
   }
 
   void increaseCounter() {
@@ -104,6 +221,22 @@ class EventsController extends GetxController {
     return file.writeAsString(data);
   }
 
+
+  Future<XFile?> takePicture() async {
+    final CameraController? cameraController = camController;
+    if (cameraController!.value.isTakingPicture) {
+      // A capture is already pending, do nothing.
+      return null;
+    }
+    try {
+      XFile file = await cameraController.takePicture();
+      return file;
+    } on CameraException catch (e) {
+      print('Error occured while taking picture: $e');
+      return null;
+    }
+  }
+
   Future<List<EventModel>> readFromFile(String eventTitle) async {
     List<EventModel> eventModelList = <EventModel>[];
     try {
@@ -129,7 +262,7 @@ class EventsController extends GetxController {
     }
   }
 
-  void stopEvent() {
+  void saveEventStat() {
     if (eventList.isNotEmpty) {
       print("HEADER : " + EventModel.getCSVHeaderString());
       EventModel eventModel = EventModel();
@@ -156,6 +289,18 @@ class EventsController extends GetxController {
     event_created.value = 0;
     eventViewIndex = 0;
     update();
+  }
+
+  void stopEvent() {
+
+    if(isRecordingInProgress){
+      stopVideoRecording().then((value) => {
+        saveEventStat(),
+        isRecordingInProgress = false
+      });
+    }else {
+      saveEventStat();
+    }
   }
 
   void clearEventList() {
@@ -327,5 +472,67 @@ class EventsController extends GetxController {
     eventModel.eventStatus = 1;
     eventModel.eventExecutionTime = DateTime.now();
     eventList.add(eventModel);
+  }
+
+
+  Future<void> initCamera() async {
+    try {
+      WidgetsFlutterBinding.ensureInitialized();
+      cameras = await availableCameras();
+    } on CameraException catch (e) {
+      print('Error in fetching the cameras: $e');
+    }
+  }
+
+  void onNewCameraSelected(CameraDescription cameraDescription, bool mounted) async {
+    final previousCameraController = camController;
+
+    // Instantiating the camera controller
+    final CameraController cameraController = CameraController(
+      cameraDescription,
+      ResolutionPreset.high,
+      imageFormatGroup: ImageFormatGroup.jpeg,
+    );
+
+    // Dispose the previous controller
+    await previousCameraController?.dispose();
+
+    // Replace with the new controller
+    if (mounted) {
+      camController = cameraController;
+      update();
+    }
+
+    // Update UI if controller updated
+    cameraController.addListener(() {
+      if (mounted) update();
+    });
+
+    // Initialize controller
+    try {
+      await cameraController.initialize();
+    } on CameraException catch (e) {
+      print('Error initializing camera: $e');
+    }
+
+    // Update the boolean
+    if (mounted) {
+        isCameraInitialized = camController!.value.isInitialized;
+      update();
+    }
+  }
+
+  LatLng getCurrentLatLang() {
+    double lat = -6.17553;
+    double long = 106.82747;
+    try {
+      lat = double.parse(locationLat.value);
+      long = double.parse(locationLong.value);
+    } catch (e){
+      print("PARSING FAILED, using default location");
+      double lat = -6.17553;
+      double long = 106.82747;
+    }
+    return LatLng(lat, long);
   }
 }

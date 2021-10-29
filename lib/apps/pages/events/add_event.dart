@@ -20,21 +20,22 @@ class AddEventView extends GetView<EventsController> {
             ),
             child: Column(
               children: <Widget>[
-                SizedBox(
-                    width: MediaQuery.of(context).size.width - 10,
+                Obx(() => SizedBox(
+                    key: UniqueKey(),//Map section
+                    width: controller.mapWidth.toDouble(),
                     height: 100,
                     child: FlutterMap(
                       options: MapOptions(
-                        center: LatLng(-6.29, 106.68),
+                        center: controller.getCurrentLatLang(),
                         zoom: 15.0,
                       ),
                       layers: [
                         MarkerLayerOptions(
                           markers: [
                             Marker(
-                              width: 80.0,
-                              height: 80.0,
-                              point: LatLng(-6.29, 106.68),
+                              width: 60.0,
+                              height: 60.0,
+                              point: controller.getCurrentLatLang(),
                               builder: (ctx) => Container(
                                 child: FlutterLogo(),
                               ),
@@ -52,9 +53,9 @@ class AddEventView extends GetView<EventsController> {
                             options: MarkerLayerOptions(
                           markers: [
                             Marker(
-                              width: 80.0,
-                              height: 80.0,
-                              point: LatLng(-6.29, 106.68),
+                              width: 60.0,
+                              height: 60.0,
+                              point: controller.getCurrentLatLang(),
                               builder: (ctx) => Container(
                                 child: FlutterLogo(),
                               ),
@@ -62,15 +63,15 @@ class AddEventView extends GetView<EventsController> {
                           ],
                         )),
                       ],
-                    )),
+                    ))),
                 SizedBox(
                     width: MediaQuery.of(context).size.width - 10,
                     height: 40,
                     child: Row(
                       children: <Widget>[
-                        Obx(() => Text("Lat: ${controller.locationLat.value}")),
+                        Obx(() => Text("Lat: ${controller.locationLat}")),
                         Obx(() =>
-                            Text("Long: ${controller.locationLong.value}")),
+                            Text("Long: ${controller.locationLong}")),
                         TextButton(
                             onPressed: controller.onLocationButtonPressed,
                             child: Text("Get Location"))

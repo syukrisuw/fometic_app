@@ -55,14 +55,17 @@ class _ActionpadCompactView extends State<ActionpadCompactView> {
   void initState() {
     // TODO: implement initState
     playerSelectionList = getValidPlayerList();
-    selectedPlayerName = playerSelectionList[0];
-    for (var i = 0; i < playerSelectionList.length; i++) {
-      if (playerSelectionList[i] == selectedPlayerName) {
-        buttonColorList.add(this.widget.selectedColor);
-      } else {
-        buttonColorList.add(this.widget.unselectedColor);
+    if (playerSelectionList.length>0) {
+      selectedPlayerName = playerSelectionList[0];
+      for (var i = 0; i < playerSelectionList.length; i++) {
+        if (playerSelectionList[i] == selectedPlayerName) {
+          buttonColorList.add(this.widget.selectedColor);
+        } else {
+          buttonColorList.add(this.widget.unselectedColor);
+        }
       }
     }
+
     super.initState();
   }
   void resetButtonColor() {

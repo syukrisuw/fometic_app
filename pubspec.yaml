@@ -35,6 +35,8 @@ dependencies:
   flutter_map: ^0.14.0
   latlong2: ^0.8.1
   geolocator: ^7.7.1
+  camera: ^0.9.4+3
+  video_player: ^2.2.6
   flutter:
     sdk: flutter
 
