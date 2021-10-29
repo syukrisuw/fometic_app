@@ -7,13 +7,15 @@ import 'package:fometic_app/apps/modules/dialogs/add_player_dialog.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:fometic_app/apps/models/event_model.dart';
+import 'package:fometic_app/apps/models/fometic_event_model.dart';
 import 'package:fometic_app/apps/models/player_model.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:camera/camera.dart';
 
+import 'main_controller.dart';
 
-class EventsController extends GetxController {
+
+class EventsController extends GetxController with WidgetsBindingObserver {
 
   final String title = 'Event Title';
   final String noEventTitle = 'No Event Title';
@@ -27,13 +29,16 @@ class EventsController extends GetxController {
   var totalPlayer = 0.obs;
   var mapWidth = Get.mediaQuery.size.width.toInt().obs;
 
+  MainController mainController = Get.find<MainController>();
+
   List<CameraDescription> cameras = [];
-  CameraController? camController;
+
   bool isCameraInitialized = false;
   var imageModeSelected = "image".obs;
   var recordingMode = "stop".obs;
   bool isRecordingInProgress = false;
   bool isVideoCameraSelected = false;
+  bool isMounted = false;
 
   GlobalKey actionpadCompactLeft = new GlobalKey();
   GlobalKey actionpadCompactRight = new GlobalKey();
@@ -58,6 +63,7 @@ class EventsController extends GetxController {
 
   @override
   void onInit() {
+    print("[EventController.onInit]");
     locationLat.value = "-6.17553";
     locationLong.value = "106.82747";
     mapWidth.value = Get.mediaQuery.size.width.toInt();
@@ -69,8 +75,25 @@ class EventsController extends GetxController {
 
   @override
   void onClose() {
-    camController?.dispose();
+    print("[EventController.onClose]");
+    mainController.camController?.dispose();
     super.onClose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("[EventController.didChangeAppLifecycleState]");
+    if (mainController.camController == null || !isCameraInitialized) {
+      return;
+    }
+    if (state == AppLifecycleState.inactive) {
+      mainController.camController?.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      if (mainController.camController != null) {
+        onNewCameraSelected(cameras[0], true);
+      }
+    }
+    super.didChangeAppLifecycleState(state);
   }
 
   void selectImageVideoRecording(int mode){
@@ -89,8 +112,8 @@ class EventsController extends GetxController {
   }
 
   Future<void> startVideoRecording() async {
-    final CameraController? cameraController = camController;
-    if (camController!.value.isRecordingVideo) {
+    final CameraController? cameraController = mainController.camController;
+    if (mainController.camController!.value.isRecordingVideo) {
       // A recording has already started, do nothing.
       return;
     }
@@ -108,33 +131,32 @@ class EventsController extends GetxController {
   }
 
   Future<XFile?> stopVideoRecording() async {
-    print("Stop Video recording");
-    if (!camController!.value.isRecordingVideo) {
+    print("[EventController]Stop Video recording");
+    if (!mainController.camController!.value.isRecordingVideo) {
       // Recording is already is stopped state
       return null;
     }
     try {
-      XFile file = await camController!.stopVideoRecording();
+      XFile file = await mainController.camController!.stopVideoRecording();
         recordingMode.value="stop";
         isRecordingInProgress = false;
-        print(isRecordingInProgress);
+        print("[EventController] isRecordingInProgress=${isRecordingInProgress}");
         update();
       return file;
     } on CameraException catch (e) {
-      print('Error stopping video recording: $e');
-      return null;
-    } finally {
+      print('[EventController]Error stopping video recording: $e');
       update();
+      return null;
     }
   }
 
   Future<void> pauseVideoRecording() async {
-    if (!camController!.value.isRecordingVideo) {
+    if (!mainController.camController!.value.isRecordingVideo) {
       // Video recording is not in progress
       return;
     }
     try {
-      await camController!.pauseVideoRecording();
+      await mainController.camController!.pauseVideoRecording();
     } on CameraException catch (e) {
       print('Error pausing video recording: $e');
     } finally {
@@ -143,13 +165,13 @@ class EventsController extends GetxController {
   }
 
   Future<void> resumeVideoRecording() async {
-    if (!camController!.value.isRecordingVideo) {
+    if (!mainController.camController!.value.isRecordingVideo) {
       // No video recording was in progress
       update();
       return;
     }
     try {
-      await camController!.resumeVideoRecording();
+      await mainController.camController!.resumeVideoRecording();
     } on CameraException catch (e) {
       print('Error resuming video recording: $e');
     } finally {
@@ -223,7 +245,7 @@ class EventsController extends GetxController {
 
 
   Future<XFile?> takePicture() async {
-    final CameraController? cameraController = camController;
+    final CameraController? cameraController = mainController.camController;
     if (cameraController!.value.isTakingPicture) {
       // A capture is already pending, do nothing.
       return null;
@@ -294,7 +316,9 @@ class EventsController extends GetxController {
   void stopEvent() {
 
     if(isRecordingInProgress){
+      print("isRecordingInProgress");
       stopVideoRecording().then((value) => {
+        print("Saving Event"),
         saveEventStat(),
         isRecordingInProgress = false
       });
@@ -476,6 +500,7 @@ class EventsController extends GetxController {
 
 
   Future<void> initCamera() async {
+    print("[EventController.initCamera]");
     try {
       WidgetsFlutterBinding.ensureInitialized();
       cameras = await availableCameras();
@@ -485,12 +510,12 @@ class EventsController extends GetxController {
   }
 
   void onNewCameraSelected(CameraDescription cameraDescription, bool mounted) async {
-    final previousCameraController = camController;
+    final previousCameraController = mainController.camController;
 
     // Instantiating the camera controller
     final CameraController cameraController = CameraController(
       cameraDescription,
-      ResolutionPreset.high,
+      ResolutionPreset.low,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
@@ -499,7 +524,7 @@ class EventsController extends GetxController {
 
     // Replace with the new controller
     if (mounted) {
-      camController = cameraController;
+      mainController.camController = cameraController;
       update();
     }
 
@@ -517,7 +542,7 @@ class EventsController extends GetxController {
 
     // Update the boolean
     if (mounted) {
-        isCameraInitialized = camController!.value.isInitialized;
+        isCameraInitialized = mainController.camController!.value.isInitialized;
       update();
     }
   }

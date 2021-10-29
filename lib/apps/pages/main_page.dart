@@ -20,7 +20,7 @@ class MainPage extends StatelessWidget {
     ];
   }
 
-  List<PersistentBottomNavBarItem> _navBarsItems() {
+  List<PersistentBottomNavBarItem> _navBarsItems(MainController controller, BuildContext context) {
     return [
       PersistentBottomNavBarItem(
         icon: Icon(CupertinoIcons.home),
@@ -77,8 +77,9 @@ class MainPage extends StatelessWidget {
           body: PersistentTabView(
             context,
             controller: controller.tabController,
+            onItemSelected: controller.onTabItemSelected,
             screens: _buildScreens(),
-            items: _navBarsItems(),
+            items: _navBarsItems(controller, context),
             confineInSafeArea: true,
             backgroundColor: Colors.white, // Default is Colors.white.
             handleAndroidBackButtonPress: true, // Default is true.

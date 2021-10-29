@@ -1,61 +1,31 @@
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
+import 'package:fometic_app/apps/models/fometic_event_model.dart';
+import 'package:fometic_app/apps/models/fometic_model.dart';
+import 'package:fometic_app/apps/services/file_services.dart';
+import 'package:get/get.dart';
+
+class FileHelper extends GetxService {
+  FileServices fileServices = Get.find<FileServices>();
 
 
-class FileHelper {
-  Future<String> getLocalPath()  async {
-    //var dir = await getApplicationDocumentsDirectory();
-    Directory?  directory;
-    directory = await getExternalStorageDirectory();
-    String newPath = "";
-    print(directory);
-    if (directory != null) {
-      List<String> paths = directory.path.split("/");
-      for (int x = 1; x < paths.length; x++) {
-        String folder = paths[x];
-        if (folder != "Android") {
-          newPath += "/" + folder;
-        } else {
-          break;
-        }
+  Future<void> writeFometicModelToCsvFile(FometicModel fometicModel) async {
+    String data = fometicModel.toString();
+    fileServices.writeStringToFile(fometicModel.modelName, "csv", data);
+  }
+
+  Future<void> writeFometicEventModelListToCsvFile(List<FometicEventMdl> fometicEventMdlList) async {
+    String dataString = FometicEventMdl.getCSVHeaderString()+"\n";
+    String modelName = "";
+    if (fometicEventMdlList.isNotEmpty) {
+      modelName = fometicEventMdlList[0].modelName;
+      for (FometicEventMdl eventModel in fometicEventMdlList) {
+        dataString += eventModel.toCSVString();
+        dataString +="\n";
       }
+    } else {
+      modelName = FometicEventMdl.modelNameType;
+      dataString+="Empty Event Data";
     }
-    newPath = newPath + "/FometicApp";
-    directory = Directory(newPath);
-    if (!await directory.exists()) {
-      await directory.create(recursive: true);
-    }
-    print(directory.path.toString());
-    return directory.path;
-  }
 
-  Future<File> getLocalFile(String prefix, String suffix, String fileExtension) async {
-    String path = await getLocalPath();
-    return File('${path}/${prefix}_Event_${suffix}.${fileExtension}');
-  }
-
-  Future<File> getLocalFileByName(String filename) async {
-    String path = await getLocalPath();
-    return File('${path}/${filename}');
-  }
-
-  Future<File> writeToFile(String prefix, String suffix, String data) async {
-    File file = await getLocalFile("Fometic", "Data", "csv");
-    String data = "";
-    if (data.isEmpty) {
-      data = "Empty Event Data";
-    }
-    return file.writeAsString(data);
-  }
-
-  Future<String> readFromFile(String filename) async {
-    String data = "";
-    try {
-      final file = await getLocalFileByName(filename);
-      data = await file.readAsString();
-      return data;
-    } catch (exception) {
-      return data;
-    }
+    fileServices.writeStringToFile(modelName, "csv", dataString);
   }
 }

@@ -65,8 +65,8 @@ class EventStartedView extends GetView<EventsController>
                       child: controller.isCameraInitialized
                           ? AspectRatio(
                               aspectRatio: 1 /
-                                  controller.camController!.value.aspectRatio,
-                              child: controller.camController!.buildPreview(),
+                                  controller.mainController.camController!.value.aspectRatio,
+                              child: controller.mainController.camController!.buildPreview(),
                             )
                           : Container(),
                     ),

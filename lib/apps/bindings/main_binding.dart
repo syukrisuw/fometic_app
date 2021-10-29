@@ -14,9 +14,10 @@ class MainBinding extends Bindings {
     Get.put(MainController());
     Get.put(HomeController());
     Get.put(FavouritesController());
-    Get.put(SettingsController());
-    Get.put(EventsController());
+    //Get.put(EventsController());
+    Get.lazyPut<EventsController>(() => EventsController());
     Get.put(HistoriesController());
 //    Get.lazyPut<HistoriesController>(() => HistoriesController());
+    Get.put(SettingsController());
   }
 }

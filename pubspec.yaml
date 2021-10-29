@@ -37,6 +37,9 @@ dependencies:
   geolocator: ^7.7.1
   camera: ^0.9.4+3
   video_player: ^2.2.6
+  tflite: ^1.1.2
+  image_picker: ^0.8.4+3
+  intl: ^0.17.0
   flutter:
     sdk: flutter
 
@@ -72,6 +75,7 @@ flutter:
     - assets/newimages/large/
     - assets/newimages/small/
     - assets/images/
+    - assets/tflite/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

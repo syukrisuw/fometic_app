@@ -1,6 +1,7 @@
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-class BackendServices {
+class BackendServices extends GetxService {
 
   static var client = http.Client();
 
