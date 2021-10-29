@@ -1,11 +1,20 @@
+import 'package:flutter/material.dart';
 import 'package:fometic_app/apps/models/fometic_event_model.dart';
 import 'package:fometic_app/apps/models/fometic_model.dart';
 import 'package:fometic_app/apps/services/file_services.dart';
 import 'package:get/get.dart';
 
-class FileHelper extends GetxService {
+class FileHelperServices extends GetxService {
   FileServices fileServices = Get.find<FileServices>();
 
+  Future<void> init() async {
+    try {
+      print('[FileHelperServices.init]');
+      WidgetsFlutterBinding.ensureInitialized();
+    } on Exception catch (e) {
+      print('[FileHelperServices.init]>>>Error in file initiation : $e');
+    }
+  }
 
   Future<void> writeFometicModelToCsvFile(FometicModel fometicModel) async {
     String data = fometicModel.toString();

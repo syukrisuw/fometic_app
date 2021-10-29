@@ -28,7 +28,7 @@ class HistoriesController extends GetxController {
 
   CameraServices cameraServices = Get.find<CameraServices>();
   FileServices fileServices = Get.find<FileServices>();
-  FileHelper fileHelper = Get.find<FileHelper>();
+  FileHelperServices fileHelper = Get.find<FileHelperServices>();
 
   var imageModeSelected = "image".obs;
   var recordingMode = "stop".obs;

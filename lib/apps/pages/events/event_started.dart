@@ -62,11 +62,11 @@ class EventStartedView extends GetView<EventsController>
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.red),
                       ),
-                      child: controller.isCameraInitialized
+                      child: controller.cameraServices.isCameraInitialized
                           ? AspectRatio(
                               aspectRatio: 1 /
-                                  controller.mainController.camController!.value.aspectRatio,
-                              child: controller.mainController.camController!.buildPreview(),
+                                  controller.cameraServices.camController!.value.aspectRatio,
+                              child: controller.cameraServices.camController!.buildPreview(),
                             )
                           : Container(),
                     ),
@@ -79,7 +79,7 @@ class EventStartedView extends GetView<EventsController>
                             onTap: (controller.imageModeSelected.value ==
                                     "video")
                                 ? () async {
-                                    if (controller.isRecordingInProgress) {
+                                    if (controller.cameraServices.isRecordingInProgress) {
                                       print("Trying to stopVideoRecording");
                                       XFile? rawVideo =
                                           await controller.stopVideoRecording();
@@ -147,7 +147,7 @@ class EventStartedView extends GetView<EventsController>
                                   size: 50,
                                 ))),
                                 controller.isVideoCameraSelected &&
-                                        controller.isRecordingInProgress
+                                        controller.cameraServices.isRecordingInProgress
                                     ? Icon(
                                         Icons.stop_rounded,
                                         color: Colors.white,

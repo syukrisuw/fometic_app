@@ -1,17 +1,14 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:fometic_app/apps/services/camera_services.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
-import 'events_controller.dart';
-import 'histories_controller.dart';
-
 class MainController extends GetxController with WidgetsBindingObserver {
   final String title = 'Main Title';
   var tabIndex = 2;
   var allowWriteFile = false;
+  CameraServices cameraServices = Get.find<CameraServices>();
 
   PersistentTabController tabController =  PersistentTabController(initialIndex: 0);
 
@@ -20,6 +17,29 @@ class MainController extends GetxController with WidgetsBindingObserver {
     print("[MainController.onInit]");
     super.onInit();
     requestWritePermission();
+  }
+
+  @override
+  void onClose() {
+    print("[MainController.onClose]");
+    cameraServices.camController!.dispose();
+    super.onClose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("[EventController.didChangeAppLifecycleState]");
+    if (cameraServices.camController == null || !cameraServices.isCameraInitialized) {
+      return;
+    }
+    if (state == AppLifecycleState.inactive) {
+      cameraServices.camController?.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      if (cameraServices.camController != null) {
+        cameraServices.onNewCameraSelected(cameraServices.cameras[0], true);
+      }
+    }
+    super.didChangeAppLifecycleState(state);
   }
 
   requestWritePermission() async {

@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:fometic_app/apps/modules/actionpad/views/action_pad_compact.dart';
-import 'package:fometic_app/apps/modules/dialogs/add_player_dialog.dart';
+import 'package:fometic_app/apps/models/fometic_event_model.dart';
+import 'package:fometic_app/apps/services/camera_services.dart';
+import 'package:fometic_app/apps/services/file_services.dart';
+import 'package:fometic_app/utils/file_helper.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:fometic_app/apps/models/fometic_event_model.dart';
 import 'package:fometic_app/apps/models/player_model.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:camera/camera.dart';
@@ -29,14 +29,12 @@ class EventsController extends GetxController with WidgetsBindingObserver {
   var totalPlayer = 0.obs;
   var mapWidth = Get.mediaQuery.size.width.toInt().obs;
 
-  MainController mainController = Get.find<MainController>();
+  CameraServices cameraServices = Get.find<CameraServices>();
+  FileServices fileServices = Get.find<FileServices>();
+  FileHelperServices FileHelper = Get.find<FileHelperServices>();
 
-  List<CameraDescription> cameras = [];
-
-  bool isCameraInitialized = false;
   var imageModeSelected = "image".obs;
   var recordingMode = "stop".obs;
-  bool isRecordingInProgress = false;
   bool isVideoCameraSelected = false;
   bool isMounted = false;
 
@@ -48,7 +46,7 @@ class EventsController extends GetxController with WidgetsBindingObserver {
   List<PlayerModel> playerModelList = <PlayerModel>[].obs;
 
   List<String> playerList = <String>[].obs;
-  List<EventModel> eventList = <EventModel>[];
+  List<FometicEventMdl> eventList = <FometicEventMdl>[];
 
   TextEditingController eventNameTextController = TextEditingController();
   TextEditingController eventTotalPlayerTextController =
@@ -68,7 +66,7 @@ class EventsController extends GetxController with WidgetsBindingObserver {
     locationLong.value = "106.82747";
     mapWidth.value = Get.mediaQuery.size.width.toInt();
     //SystemChrome.setEnabledSystemUIOverlays([]);
-    initCamera().then((value) => onNewCameraSelected(cameras[0], true));
+    initCamera().then((value) => onNewCameraSelected(cameraServices.cameras[0], true));
 
     super.onInit();
   }
@@ -76,27 +74,12 @@ class EventsController extends GetxController with WidgetsBindingObserver {
   @override
   void onClose() {
     print("[EventController.onClose]");
-    mainController.camController?.dispose();
     super.onClose();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    print("[EventController.didChangeAppLifecycleState]");
-    if (mainController.camController == null || !isCameraInitialized) {
-      return;
-    }
-    if (state == AppLifecycleState.inactive) {
-      mainController.camController?.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      if (mainController.camController != null) {
-        onNewCameraSelected(cameras[0], true);
-      }
-    }
-    super.didChangeAppLifecycleState(state);
-  }
 
   void selectImageVideoRecording(int mode){
+    print("[EventController.selectImageVideoRecording]");
     if (mode==1) {
       imageModeSelected.value="video";
       recordingMode.value="stop";
@@ -112,16 +95,17 @@ class EventsController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> startVideoRecording() async {
-    final CameraController? cameraController = mainController.camController;
-    if (mainController.camController!.value.isRecordingVideo) {
+    print("[EventController.startVideoRecording]");
+    final CameraController? cameraController = cameraServices.camController;
+    if (cameraServices.camController!.value.isRecordingVideo) {
       // A recording has already started, do nothing.
       return;
     }
     try {
       await cameraController!.startVideoRecording();
-        isRecordingInProgress = true;
+      cameraServices.isRecordingInProgress = true;
         recordingMode.value="record";
-        print(isRecordingInProgress);
+        print(cameraServices.isRecordingInProgress);
     } on CameraException catch (e) {
       print('Error starting to record video: $e');
     } finally {
@@ -131,16 +115,16 @@ class EventsController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<XFile?> stopVideoRecording() async {
-    print("[EventController]Stop Video recording");
-    if (!mainController.camController!.value.isRecordingVideo) {
+    print("[EventController.stopVideoRecording]Stop Video recording");
+    if (!cameraServices.camController!.value.isRecordingVideo) {
       // Recording is already is stopped state
       return null;
     }
     try {
-      XFile file = await mainController.camController!.stopVideoRecording();
+      XFile file = await cameraServices.camController!.stopVideoRecording();
         recordingMode.value="stop";
-        isRecordingInProgress = false;
-        print("[EventController] isRecordingInProgress=${isRecordingInProgress}");
+        cameraServices.isRecordingInProgress = false;
+        print("[EventController.stopVideoRecording] isRecordingInProgress=${cameraServices.isRecordingInProgress}");
         update();
       return file;
     } on CameraException catch (e) {
@@ -151,12 +135,12 @@ class EventsController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> pauseVideoRecording() async {
-    if (!mainController.camController!.value.isRecordingVideo) {
+    if (!cameraServices.camController!.value.isRecordingVideo) {
       // Video recording is not in progress
       return;
     }
     try {
-      await mainController.camController!.pauseVideoRecording();
+      await cameraServices.camController!.pauseVideoRecording();
     } on CameraException catch (e) {
       print('Error pausing video recording: $e');
     } finally {
@@ -165,13 +149,13 @@ class EventsController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> resumeVideoRecording() async {
-    if (!mainController.camController!.value.isRecordingVideo) {
+    if (!cameraServices.camController!.value.isRecordingVideo) {
       // No video recording was in progress
       update();
       return;
     }
     try {
-      await mainController.camController!.resumeVideoRecording();
+      await cameraServices.camController!.resumeVideoRecording();
     } on CameraException catch (e) {
       print('Error resuming video recording: $e');
     } finally {
@@ -228,12 +212,12 @@ class EventsController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<File> writeToFile(
-      String eventTitle, List<EventModel> eventModelList) async {
+      String eventTitle, List<FometicEventMdl> eventModelList) async {
     File file = await getLocalFile(eventTitle);
     String data = "";
     if (eventModelList.isNotEmpty) {
-      data = EventModel.getCSVHeaderString() + "\n";
-      for (EventModel eventModel in eventModelList) {
+      data = FometicEventMdl.getCSVHeaderString() + "\n";
+      for (FometicEventMdl eventModel in eventModelList) {
         data += eventModel.toCSVString();
         data += "\n";
       }
@@ -245,7 +229,7 @@ class EventsController extends GetxController with WidgetsBindingObserver {
 
 
   Future<XFile?> takePicture() async {
-    final CameraController? cameraController = mainController.camController;
+    final CameraController? cameraController = cameraServices.camController;
     if (cameraController!.value.isTakingPicture) {
       // A capture is already pending, do nothing.
       return null;
@@ -259,8 +243,8 @@ class EventsController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  Future<List<EventModel>> readFromFile(String eventTitle) async {
-    List<EventModel> eventModelList = <EventModel>[];
+  Future<List<FometicEventMdl>> readFromFile(String eventTitle) async {
+    List<FometicEventMdl> eventModelList = <FometicEventMdl>[];
     try {
       final file = await getLocalFile(eventTitle);
       String data = await file.readAsString();
@@ -269,12 +253,14 @@ class EventsController extends GetxController with WidgetsBindingObserver {
       for (String dataString in dataStringList) {
         if (dataString != "") {
           List<String> dataValueList = dataString.split(",");
-          EventModel eventModel = EventModel();
-          eventModel.eventTitle = dataValueList[0];
-          eventModel.eventName = dataValueList[1];
-          eventModel.eventMessage = dataValueList[2];
-          eventModel.eventStatus = int.parse(dataValueList[3]);
-          eventModel.eventExecutionTime = DateTime.parse(dataValueList[4]);
+          FometicEventMdl eventModel = FometicEventMdl(
+              eventTitle: dataValueList[0],
+              eventName: dataValueList[1],
+              eventMessage: dataValueList[2],
+              eventStatus: int.parse(dataValueList[3]),
+              eventExecutionTime: DateTime.parse(dataValueList[4])
+          );
+
           eventModelList.add(eventModel);
         }
       }
@@ -286,15 +272,17 @@ class EventsController extends GetxController with WidgetsBindingObserver {
 
   void saveEventStat() {
     if (eventList.isNotEmpty) {
-      print("HEADER : " + EventModel.getCSVHeaderString());
-      EventModel eventModel = EventModel();
-      eventModel.eventTitle = event_name.value;
-      eventModel.eventName = "Stop Event";
-      eventModel.eventMessage = "Event Stop Completed";
-      eventModel.eventStatus = 999;
-      eventModel.eventExecutionTime = DateTime.now();
+      print("HEADER : " + FometicEventMdl.getCSVHeaderString());
+      FometicEventMdl eventModel = FometicEventMdl(
+          eventTitle: event_name.value,
+          eventName: "Stop Event",
+          eventMessage: "Event Stop Completed",
+          eventStatus: 999,
+          eventExecutionTime: DateTime.now()
+      );
+
       eventList.add(eventModel);
-      for (EventModel eventModel in eventList) {
+      for (FometicEventMdl eventModel in eventList) {
         print("Event : " + eventModel.toCSVString());
       }
       //Write to CSV File
@@ -315,12 +303,12 @@ class EventsController extends GetxController with WidgetsBindingObserver {
 
   void stopEvent() {
 
-    if(isRecordingInProgress){
+    if(cameraServices.isRecordingInProgress){
       print("isRecordingInProgress");
       stopVideoRecording().then((value) => {
         print("Saving Event"),
         saveEventStat(),
-        isRecordingInProgress = false
+        cameraServices.isRecordingInProgress = false
       });
     }else {
       saveEventStat();
@@ -358,13 +346,15 @@ class EventsController extends GetxController with WidgetsBindingObserver {
     event_created.value = 1;
     eventViewIndex = 2;
     eventStartTime = DateTime.now();
-    EventModel eventModel = EventModel();
-    eventModel.eventTitle = event_name.value;
-    eventModel.eventName = "Start New Event";
-    eventModel.eventMessage = "Event Started";
-    eventModel.eventExecutionTime = eventStartTime;
-    eventList.add(eventModel);
 
+    FometicEventMdl eventModel = FometicEventMdl(
+        eventTitle: event_name.value,
+        eventName: "Start New Event",
+        eventMessage: "Event Started",
+        eventStatus: 100,
+        eventExecutionTime: eventStartTime
+    );
+    eventList.add(eventModel);
     update();
   }
 
@@ -479,38 +469,39 @@ class EventsController extends GetxController with WidgetsBindingObserver {
   }
 
   void onButtonAPushed(String playerName, String actionPushed) {
-    EventModel eventModel = EventModel();
-    eventModel.eventTitle = event_name.value;
-    eventModel.eventName = playerName;
-    eventModel.eventMessage = actionPushed;
-    eventModel.eventStatus = 1;
-    eventModel.eventExecutionTime = DateTime.now();
+    FometicEventMdl eventModel = FometicEventMdl(
+        eventTitle: event_name.value,
+        eventName: playerName,
+        eventMessage: actionPushed,
+        eventStatus: 1,
+        eventExecutionTime: DateTime.now()
+    );
     eventList.add(eventModel);
   }
 
   void onButtonBPushed(String playerName, String actionPushed) {
-    EventModel eventModel = EventModel();
-    eventModel.eventTitle = event_name.value;
-    eventModel.eventName = playerName;
-    eventModel.eventMessage = actionPushed;
-    eventModel.eventStatus = 1;
-    eventModel.eventExecutionTime = DateTime.now();
+    FometicEventMdl eventModel = FometicEventMdl(
+        eventTitle: event_name.value,
+        eventName: playerName,
+        eventMessage: actionPushed,
+        eventStatus: 1,
+        eventExecutionTime: DateTime.now()
+    );
     eventList.add(eventModel);
   }
-
 
   Future<void> initCamera() async {
     print("[EventController.initCamera]");
     try {
       WidgetsFlutterBinding.ensureInitialized();
-      cameras = await availableCameras();
+      cameraServices.cameras = await availableCameras();
     } on CameraException catch (e) {
       print('Error in fetching the cameras: $e');
     }
   }
 
   void onNewCameraSelected(CameraDescription cameraDescription, bool mounted) async {
-    final previousCameraController = mainController.camController;
+    final previousCameraController = cameraServices.camController;
 
     // Instantiating the camera controller
     final CameraController cameraController = CameraController(
@@ -524,7 +515,7 @@ class EventsController extends GetxController with WidgetsBindingObserver {
 
     // Replace with the new controller
     if (mounted) {
-      mainController.camController = cameraController;
+      cameraServices.camController = cameraController;
       update();
     }
 
@@ -542,7 +533,7 @@ class EventsController extends GetxController with WidgetsBindingObserver {
 
     // Update the boolean
     if (mounted) {
-        isCameraInitialized = mainController.camController!.value.isInitialized;
+      cameraServices.isCameraInitialized = cameraServices.camController!.value.isInitialized;
       update();
     }
   }

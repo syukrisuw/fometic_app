@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fometic_app/apps/services/camera_services.dart';
+import 'package:fometic_app/utils/file_helper.dart';
 import 'package:get/get.dart';
 
 import 'apps/pages/app_pages.dart';
@@ -17,6 +18,8 @@ Future<void> initServices() async {
 
   await Get.putAsync(() => CameraServices().init() );
   await Get.putAsync(() => FileServices().init() );
+  await Get.putAsync(() => FileHelperServices().init() );
+
   print("[Main.initServices]>>>Done initilizing all services");
 }
 
