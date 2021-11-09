@@ -5,6 +5,8 @@ import 'package:path_provider/path_provider.dart';
 
 
 class FileServices extends GetxService {
+
+
   static const String baseDirectoryName = "Android";
   static const String fometicDirectoryName = "FometicApp";
   static const String fileSuffix = "Fometic_";
@@ -15,6 +17,8 @@ class FileServices extends GetxService {
   static const String fileExtensionTxt = "txt";
   static const String fileExtensionData = "dat";
 
+  bool isFileServicesReady = false;
+
   Future<void> init() async {
     try {
       print('[FileServices.init]');
@@ -22,6 +26,11 @@ class FileServices extends GetxService {
     } on Exception catch (e) {
       print('[FileServices.init]>>>Error in file initiation : $e');
     }
+  }
+
+  @override
+  void onReady() {
+    isFileServicesReady = true;
   }
 
 
@@ -80,6 +89,11 @@ class FileServices extends GetxService {
     } catch (exception) {
       return data;
     }
+  }
+
+  Future<void> writeXfileToDefaultStorage(XFile xfile) async {
+
+
   }
 
 }

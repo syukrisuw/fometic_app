@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:fometic_app/apps/services/camera_services.dart';
 import 'package:get/get.dart';
@@ -22,21 +23,21 @@ class MainController extends GetxController with WidgetsBindingObserver {
   @override
   void onClose() {
     print("[MainController.onClose]");
-    cameraServices.camController!.dispose();
+    cameraServices.cameraController!.dispose();
     super.onClose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print("[EventController.didChangeAppLifecycleState]");
-    if (cameraServices.camController == null || !cameraServices.isCameraInitialized) {
+    if (cameraServices.cameraController == null || !cameraServices.isCameraInitialized) {
       return;
     }
     if (state == AppLifecycleState.inactive) {
-      cameraServices.camController?.dispose();
+      cameraServices.cameraController?.dispose();
     } else if (state == AppLifecycleState.resumed) {
-      if (cameraServices.camController != null) {
-        cameraServices.onNewCameraSelected(cameraServices.cameras[0], true);
+      if (cameraServices.cameraController != null) {
+        cameraServices.onNewCameraSelected(cameraServices.cameraDescriptionList[0], ResolutionPreset.medium);
       }
     }
     super.didChangeAppLifecycleState(state);
@@ -66,29 +67,10 @@ class MainController extends GetxController with WidgetsBindingObserver {
     print("[MainController.onTabItemSelected] index=${index}");
     CameraServices cameraServices = Get.find<CameraServices>();
 
-    if(cameraServices.isRecordingInProgress) {
+    if(cameraServices.isRecordingVideoInProgress) {
       cameraServices.stopVideoRecording();
     }
 
-/*
-    if(index==2){
-      print("eventController.isCameraInitialized=${eventController.isCameraInitialized.toString()}");
-      histController.isCameraInitialized = false;
-      if (eventController.isCameraInitialized) {
-        eventController.initCamera().whenComplete(()=> {eventController.onNewCameraSelected(eventController.cameras[0], true)});
-      }
-
-    }else if(index==3){
-      print("histController.isCameraInitialized=${eventController.isCameraInitialized.toString()}");
-      eventController.isCameraInitialized = false;
-      if (histController.isCameraInitialized) {
-        histController.initCamera().whenComplete(()=> {
-          print("histController.initCamera completed"),
-          histController.onNewCameraSelected(histController.cameras[0], true)
-        });
-      }
-    }
-    */
 
   }
 
